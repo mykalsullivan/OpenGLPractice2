@@ -7,9 +7,11 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <cstring>
+#include <valarray>
+#include <thread>
 
 // Window dimensions
-const unsigned int WIDTH = 800, HEIGHT = 600;
+const unsigned int WIDTH = 640, HEIGHT = 480;
 
 // IDs for VAO, VBO, and shader objects
 unsigned int vao, vbo, shader;
@@ -22,7 +24,7 @@ static const char* vertexShader =
         "\n"
         "void main()\n"
         "{\n"
-        "   gl_Position = vec4(pos.x, pos.y, pos.z, 1.0);\n"    /* Note: 'gl_Position' is also built-in */
+        "   gl_Position = vec4(0.5 * pos.x, 0.5 * pos.y, pos.z, 1.0);\n"    /* Note: 'gl_Position' is also built-in */
         "}\n"
         "\n";
 
@@ -34,7 +36,7 @@ static const char* fragmentShader =
         "\n"
         "void main()\n"
         "{\n"
-        "   color = vec4(0.0, 0.0, 1.0, 1.0);\n"
+        "   color = vec4(1.0, 1.0, 1.0, 0.5);\n"
         "}\n"
         "\n";
 
@@ -43,8 +45,8 @@ void createTriangle()
     // Create vertex coordinates
     float vertices[] = {
             -1.0f, -1.0f, 0.0f,
-            1.0f, -1.0f, 0.0f,
-            0.0f, 1.0f, 0.0f
+            0.0f, 1.0f, 0.0f,
+            1.0f, -1.0f, 0.0f
     };
 
     // Generate and bind VAO
@@ -208,16 +210,27 @@ int main()
         // Get/handle user input
         glfwPollEvents();
 
-        // Clear window
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        {
+            static float i = 0;
 
-        glUseProgram(shader);
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-        glBindVertexArray(0);
+            auto r = (float) std::abs(cos(i));
+            auto g = (float) std::abs(cos(i-(M_PI/3)));
+            auto b = (float) std::abs(cos(i-(2*M_PI/3)));
 
-        glUseProgram(0);
+            // Clear window
+            glClearColor(r, g, b, 1.0f);
+            glClear(GL_COLOR_BUFFER_BIT);
+
+            glUseProgram(shader);
+            glBindVertexArray(vao);
+            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glBindVertexArray(0);
+
+            glUseProgram(0);
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(17));
+            i += 0.01f;
+        }
 
         // Swap display buffers
         glfwSwapBuffers(mainWindow);
