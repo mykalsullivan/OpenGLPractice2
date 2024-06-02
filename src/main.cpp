@@ -25,8 +25,7 @@ static const char* vertexShader =
         "void main()\n"
         "{\n"
         "   gl_Position = vec4(0.5 * pos.x, 0.5 * pos.y, pos.z, 1.0);\n"    /* Note: 'gl_Position' is also built-in */
-        "}\n"
-        "\n";
+        "}\n";
 
 // Fragment shader
 static const char* fragmentShader =
@@ -37,8 +36,7 @@ static const char* fragmentShader =
         "void main()\n"
         "{\n"
         "   color = vec4(1.0, 1.0, 1.0, 0.5);\n"
-        "}\n"
-        "\n";
+        "}\n";
 
 void createTriangle()
 {
@@ -213,9 +211,15 @@ int main()
         {
             static float i = 0;
 
-            auto r = (float) std::abs(cos(i));
-            auto g = (float) std::abs(cos(i-(M_PI/3)));
-            auto b = (float) std::abs(cos(i-(2*M_PI/3)));
+//            // Rotates between "hard" RGB values
+//            auto r = (float) sin(i);
+//            auto g = (float) sin(i+M_PI-(M_PI/3));
+//            auto b = (float) sin(i-(2*M_PI/3));
+
+            // Rotates between RGB values, but with a LOT of color blending
+            auto r = (float) std::abs(sin(i));
+            auto g = (float) std::abs(sin(i-(M_PI/3)));
+            auto b = (float) std::abs(sin(i-(2*M_PI/3)));
 
             // Clear window
             glClearColor(r, g, b, 1.0f);
@@ -229,7 +233,7 @@ int main()
             glUseProgram(0);
 
             std::this_thread::sleep_for(std::chrono::milliseconds(17));
-            i += 0.01f;
+            i += 0.005f;
         }
 
         // Swap display buffers
